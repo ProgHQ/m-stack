@@ -42,6 +42,10 @@
 #if defined(__XC16__) || defined(__XC32__)
 #pragma pack(push, 1)
 #elif __XC8
+    #if __XC8_VERSION >= 2000
+	// This is needed, even though the XC8 manual says its unnecessary
+	#pragma pack(push, 1)
+    #endif
 #else
 #error "Compiler not supported"
 #endif
@@ -227,15 +231,16 @@ struct cdc_serial_state_notification {
 	struct cdc_notification_header header;
 	union {
 		struct {
-			uint16_t bRxCarrier : 1; /**< Indicates DCD */
-			uint16_t bTxCarrier : 1; /**< Indicates DSR */
-			uint16_t bBreak : 1;
-			uint16_t bRingSignal : 1;
-			uint16_t bFraming : 1;
-			uint16_t bParity : 1;
-			uint16_t bOverrun : 1;
-			uint16_t : 1;
-			uint16_t : 8; /* XC8 can't handle a 9-bit bitfield */
+			/* XC8 only supports bitfields on 8-bit words */
+			uint8_t bRxCarrier : 1; /**< Indicates DCD */
+			uint8_t bTxCarrier : 1; /**< Indicates DSR */
+			uint8_t bBreak : 1;
+			uint8_t bRingSignal : 1;
+			uint8_t bFraming : 1;
+			uint8_t bParity : 1;
+			uint8_t bOverrun : 1;
+			uint8_t : 1;
+			uint8_t : 8;
 		} bits;
 		uint16_t serial_state;
 	} data;
